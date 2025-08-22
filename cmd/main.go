@@ -10,8 +10,8 @@ type createUserData struct {
 	UserName string `json:"username"`
 }
 type createNewMessage struct {
-	SenderId   string `json:"sender_id"`   //переделать тип юид на стринг. в жсоне не бывает типа юид
-	ReceiverId string `json:"receiver_id"` //переделать тип юид на стринг. в жсоне не бывает типа юид
+	SenderId   string `json:"sender_id"`
+	ReceiverId string `json:"receiver_id"`
 	Text       string `json:"text"`
 }
 
@@ -43,6 +43,23 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	recipientID := r.URL.Query().Get("id")
+	if recipientID == "" {
+		http.Error(w, "recipientID is required", http.StatusBadRequest)
+		return
+	}
+
+	msg := models.MessagesStorage.GetMessageByRecipient(recipientID)
+	if len(msg) == 0 {
+		http.Error(w, "No message found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(msg)
+	if err != nil {
+		return
+	}
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +89,6 @@ func main() {
 	http.HandleFunc("/createUser", createUser)
 	http.HandleFunc("/postMessage", PostMessage)
 	http.HandleFunc("/getMessage", GetMessage)
-	http.HandleFunc("/sendMessage", PostMessage)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
