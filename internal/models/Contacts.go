@@ -7,10 +7,10 @@ import (
 type Contacts struct {
 	ID          uuid.UUID
 	ContactName string
-	ContactID   uuid.UUID
+	ContactID   string
 }
 
-func NewContact(ContactName string, ContactID uuid.UUID) Contacts {
+func NewContact(ContactName string, ContactID string) Contacts {
 	CId, _ := uuid.NewUUID()
 	Cont := Contacts{
 		ID:          CId,
