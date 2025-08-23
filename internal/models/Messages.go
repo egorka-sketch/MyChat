@@ -5,7 +5,6 @@ import (
 )
 
 type Message struct {
-	//gorm.Model
 	ID          uuid.UUID
 	SenderID    string
 	RecipientID string

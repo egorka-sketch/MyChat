@@ -66,6 +66,27 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+func GetChat(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+
+	userID := r.URL.Query().Get("id")
+	if userID == "" {
+		http.Error(w, "userID is required", http.StatusBadRequest)
+		return
+	}
+	msg := models.MessagesStorage.GetAllMessages(userID)
+	if len(msg) == 0 {
+		http.Error(w, "No messages found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(msg)
+	if err != nil {
+		return
+	}
+}
 
 func PostMessage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -138,6 +159,7 @@ func main() {
 	http.HandleFunc("/getMessage", GetMessage)
 	http.HandleFunc("/getContact", GetContact)
 	http.HandleFunc("/createContact", CreateContact)
+	http.HandleFunc("/GetChat", GetChat)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

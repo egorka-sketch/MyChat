@@ -26,3 +26,13 @@ func (ms *MessageStorage) GetMessageBySender(senderID string) []*Message {
 func (ms *MessageStorage) GetMessageByRecipient(recipientID string) []*Message {
 	return ms.RecipientMessages[recipientID]
 }
+func (ms *MessageStorage) GetAllMessages(UserID string) []*Message {
+	var messages []*Message
+	if sendMsg, ok := ms.SenderMessages[UserID]; ok {
+		messages = append(messages, sendMsg...)
+	}
+	if recipientMsg, ok := ms.RecipientMessages[UserID]; ok {
+		messages = append(messages, recipientMsg...)
+	}
+	return messages
+}

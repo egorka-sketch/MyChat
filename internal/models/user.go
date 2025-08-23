@@ -3,7 +3,6 @@ package models
 import "github.com/google/uuid"
 
 type User struct {
-	//gorm.Model
 	ID       uuid.UUID
 	UserName string
 }
