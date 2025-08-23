@@ -28,11 +28,11 @@ func (ms *MessageStorage) GetMessageByRecipient(recipientID string) []*Message {
 }
 func (ms *MessageStorage) GetAllMessages(UserID string) []*Message {
 	var messages []*Message
-	if sendMsg, ok := ms.SenderMessages[UserID]; ok {
-		messages = append(messages, sendMsg...)
+	for _, message := range ms.SenderMessages[UserID] {
+		messages = append(messages, message)
 	}
-	if recipientMsg, ok := ms.RecipientMessages[UserID]; ok {
-		messages = append(messages, recipientMsg...)
+	for _, message := range ms.RecipientMessages[UserID] {
+		messages = append(messages, message)
 	}
 	return messages
 }
