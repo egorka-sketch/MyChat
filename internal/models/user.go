@@ -1,10 +1,13 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"MyChat/internal/database"
+	"github.com/google/uuid"
+)
 
 type User struct {
-	ID       uuid.UUID
-	UserName string
+	ID       uuid.UUID `gorm:"type:uuid;primary_key;column:id"`
+	UserName string    `gorm:"column:user_name"`
 }
 
 func NewUser(userName string) User {
@@ -13,7 +16,10 @@ func NewUser(userName string) User {
 		ID:       userId,
 		UserName: userName,
 	}
-	UsersStorage.AddUser(u)
+	err := database.DB.Create(&u).Error
+	if err != nil {
+		return User{}
+	}
 	return u
 }
 

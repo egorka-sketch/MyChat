@@ -1,14 +1,17 @@
 package main
 
 import (
+	"MyChat/internal/database"
 	"MyChat/internal/models"
 	"encoding/json"
+	"github.com/google/uuid"
 	"net/http"
 )
 
 type createContactData struct {
 	ContactName string `json:"ContactName"`
 	ContactId   string `json:"ContactId"`
+	UserID      string `json:"UserID"`
 }
 
 type createUserData struct {
@@ -42,33 +45,34 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetMessage(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	recipientID := r.URL.Query().Get("id")
-	if recipientID == "" {
-		http.Error(w, "recipientID is required", http.StatusBadRequest)
-		return
-	}
-
-	msg := models.MessagesStorage.GetMessageByRecipient(recipientID)
-	if len(msg) == 0 {
-		http.Error(w, "No message found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(msg)
-	if err != nil {
-		return
-	}
-}
+//	func GetMessage(w http.ResponseWriter, r *http.Request) {
+//		if r.Method != "GET" {
+//			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+//			return
+//		}
+//
+//		recipientID := r.URL.Query().Get("id")
+//		if recipientID == "" {
+//			http.Error(w, "recipientID is required", http.StatusBadRequest)
+//			return
+//		}
+//
+//		msg := models.MessagesStorage.GetMessageByRecipient(recipientID)
+//		if len(msg) == 0 {
+//			http.Error(w, "No message found", http.StatusNotFound)
+//			return
+//		}
+//
+//		w.Header().Set("Content-Type", "application/json")
+//		err := json.NewEncoder(w).Encode(msg)
+//		if err != nil {
+//			return
+//		}
+//	}
 func GetChat(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
 	}
 
 	userID := r.URL.Query().Get("id")
@@ -76,7 +80,7 @@ func GetChat(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "userID is required", http.StatusBadRequest)
 		return
 	}
-	msg := models.MessagesStorage.GetAllMessages(userID)
+	msg := models.GetAllMessage(userID)
 	if len(msg) == 0 {
 		http.Error(w, "No messages found", http.StatusNotFound)
 		return
@@ -97,9 +101,17 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
+		return
 	}
-
-	mes := models.NewMessage(data.SenderId, data.ReceiverId, data.Text)
+	senderID, err := uuid.Parse(data.SenderId)
+	if err != nil {
+		return
+	}
+	receiverID, err := uuid.Parse(data.ReceiverId)
+	if err != nil {
+		return
+	}
+	mes := models.NewMessage(senderID, receiverID, data.Text)
 	w.Header().Set("Content-Type", "application/json")
 	response := map[string]string{"status": "success", "message": "Message sending: " + mes.Text}
 	err = json.NewEncoder(w).Encode(response)
@@ -119,7 +131,8 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cont := models.ContactStorage.GetContact(ContactID)
+	cont := models.NewContact
+
 	if cont == nil {
 		http.Error(w, "No contact found", http.StatusNotFound)
 		return
@@ -141,7 +154,11 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
 	}
-	cont := models.NewContact(data.ContactName, data.ContactId)
+	contactID, err := uuid.Parse(data.ContactId)
+	if err != nil {
+		return
+	}
+	cont := models.GetContact(data.ContactName, contactID)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(cont)
 	if err != nil {
@@ -150,13 +167,14 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	database.InitDB()
 	models.NewMessageStorage()
 	models.NewUserStorage()
 	models.NewStorageContacts()
 
 	http.HandleFunc("/createUser", createUser)
 	http.HandleFunc("/postMessage", PostMessage)
-	http.HandleFunc("/getMessage", GetMessage)
+	//http.HandleFunc("/getMessage", GetMessage)
 	http.HandleFunc("/getContact", GetContact)
 	http.HandleFunc("/createContact", CreateContact)
 	http.HandleFunc("/GetChat", GetChat)

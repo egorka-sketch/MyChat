@@ -14,11 +14,11 @@ func NewMessageStorage() {
 	}
 }
 
-func (ms *MessageStorage) AddMessage(message Message) {
-	ms.SenderMessages[message.SenderID] = append(ms.SenderMessages[message.SenderID], &message)
-	ms.RecipientMessages[message.RecipientID] = append(ms.RecipientMessages[message.RecipientID], &message)
-
-}
+//func (ms *MessageStorage) AddMessage(message Message) {
+//	ms.SenderMessages[message.SenderID] = append(ms.SenderMessages[message.SenderID], &message)
+//	ms.RecipientMessages[message.RecipientID] = append(ms.RecipientMessages[message.RecipientID], &message)
+//
+//}
 
 func (ms *MessageStorage) GetMessageBySender(senderID string) []*Message {
 	return ms.SenderMessages[senderID]

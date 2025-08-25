@@ -11,9 +11,10 @@ func NewStorageContacts() {
 		Contacts: make(map[string][]*Contacts)}
 
 }
-func (cs *StorageContacts) AddContact(Cont Contacts) {
-	cs.Contacts[Cont.ContactID] = append(cs.Contacts[Cont.ContactID], &Cont)
-}
+
+//func (cs *StorageContacts) AddContact(Cont Contacts) {
+//	cs.Contacts[Cont.ContactID] = append(cs.Contacts[Cont.ContactID], &Cont)
+//}
 
 func (cs *StorageContacts) GetContact(id string) []*Contacts {
 	return cs.Contacts[id]
