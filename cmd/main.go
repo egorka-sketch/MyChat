@@ -32,7 +32,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	var data createUserData
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		http.Error(w, "Некорректный JSON", http.StatusBadRequest)
+		http.Error(w, "NOT CORRECT JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -105,18 +105,17 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 	}
 	senderID, err := uuid.Parse(data.SenderId)
 	if err != nil {
-		return
+		http.Error(w, "SENDER ID is not a valid UUID", http.StatusBadRequest)
 	}
 	receiverID, err := uuid.Parse(data.ReceiverId)
 	if err != nil {
-		return
+		http.Error(w, "RECEIVER ID is not a valid UUID", http.StatusBadRequest)
 	}
 	mes := models.NewMessage(senderID, receiverID, data.Text)
 	w.Header().Set("Content-Type", "application/json")
-	response := map[string]string{"status": "success", "message": "Message sending: " + mes.Text}
-	err = json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(mes)
 	if err != nil {
-		return
+		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
 	}
 }
 func GetContact(w http.ResponseWriter, r *http.Request) {
@@ -130,8 +129,13 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "contact_id is required", http.StatusBadRequest)
 		return
 	}
-
-	cont := models.NewContact
+	contactID, err := uuid.Parse(ContactID)
+	ContactName := r.URL.Query().Get("contact_name")
+	if ContactName == "" {
+		http.Error(w, "contact_name is required", http.StatusBadRequest)
+		return
+	}
+	cont := models.GetContact(ContactName, contactID)
 
 	if cont == nil {
 		http.Error(w, "No contact found", http.StatusNotFound)
@@ -139,7 +143,7 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(cont)
+	err = json.NewEncoder(w).Encode(cont)
 	if err != nil {
 		return
 	}
@@ -158,7 +162,11 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	cont := models.GetContact(data.ContactName, contactID)
+	UserId, err := uuid.Parse(data.UserID)
+	if err != nil {
+		return
+	}
+	cont := models.NewContact(data.ContactName, contactID, UserId)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(cont)
 	if err != nil {
