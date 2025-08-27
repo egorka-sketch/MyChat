@@ -123,19 +123,13 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only GET", http.StatusMethodNotAllowed)
 		return
 	}
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		http.Error(w, "user_id is required", http.StatusBadRequest)
+		return
+	}
 
-	ContactID := r.URL.Query().Get("contact_id")
-	if ContactID == "" {
-		http.Error(w, "contact_id is required", http.StatusBadRequest)
-		return
-	}
-	contactID, err := uuid.Parse(ContactID)
-	ContactName := r.URL.Query().Get("contact_name")
-	if ContactName == "" {
-		http.Error(w, "contact_name is required", http.StatusBadRequest)
-		return
-	}
-	cont := models.GetContact(ContactName, contactID)
+	cont := models.GetContact(userID)
 
 	if cont == nil {
 		http.Error(w, "No contact found", http.StatusNotFound)
@@ -143,7 +137,7 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(cont)
+	err := json.NewEncoder(w).Encode(cont)
 	if err != nil {
 		return
 	}

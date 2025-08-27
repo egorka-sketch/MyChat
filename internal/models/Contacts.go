@@ -27,9 +27,9 @@ func NewContact(ContactName string, ContactID uuid.UUID, UserID uuid.UUID) Conta
 	return Cont
 }
 
-func GetContact(ContactName string, ContactID uuid.UUID) []Contacts {
+func GetContact(UserID string) []Contacts {
 	var contacts []Contacts
-	err := database.DB.Where("contact_id=? OR contact_name=?", ContactID, ContactName).Find(&contacts).Error
+	err := database.DB.Where("user_id = ?", UserID).Find(&contacts).Error
 	if err != nil {
 		return []Contacts{}
 	}
