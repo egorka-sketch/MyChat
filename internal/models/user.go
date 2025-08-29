@@ -23,6 +23,18 @@ func NewUser(userName string) User {
 	return u
 }
 
-func (u *User) ChangeName(newUserName string) {
-	u.UserName = newUserName
+func ChangeName(userName string, ID uuid.UUID) User {
+	if userName == "" {
+		return User{}
+	}
+	err := database.DB.Model(&User{}).Where("id = ?", ID).Update("user_name", userName).Error
+	if err != nil {
+		return User{}
+	}
+	var u User
+	err = database.DB.Model(&User{}).First(&u, "id = ?", ID).Error
+	if err != nil {
+		return User{}
+	}
+	return u
 }

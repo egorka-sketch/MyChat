@@ -14,6 +14,7 @@ func main() {
 	http.HandleFunc("/getContact", handlers.GetContact)
 	http.HandleFunc("/createContact", handlers.CreateContact)
 	http.HandleFunc("/GetChat", handlers.GetChat)
+	http.HandleFunc("/UpdateUserName", handlers.UpdateUser)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

@@ -3,11 +3,13 @@ package handlers
 import (
 	"MyChat/internal/models"
 	"encoding/json"
+	"github.com/google/uuid"
 	"net/http"
 )
 
 type createUserData struct {
 	UserName string `json:"username"`
+	ID       string `json:"id"`
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +30,28 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{"status": "success", "message": "Created user: " + user.UserName}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
+		return
+	}
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "POST Only", http.StatusMethodNotAllowed)
+		return
+	}
+	var data createUserData
+
+	Id, err := uuid.Parse(r.URL.Query().Get("id"))
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	NewName := models.ChangeName(data.UserName, Id)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewDecoder(r.Body).Decode(&NewName)
+	if err != nil {
+		http.Error(w, "NOT CORRECT", http.StatusBadRequest)
 		return
 	}
 }
