@@ -1,0 +1,64 @@
+package handlers
+
+import (
+	"MyChat/internal/models"
+	"encoding/json"
+	"github.com/google/uuid"
+	"net/http"
+)
+
+type createContactData struct {
+	ContactName string `json:"ContactName"`
+	ContactId   string `json:"ContactId"`
+	UserID      string `json:"UserID"`
+}
+
+func GetContact(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Only GET", http.StatusMethodNotAllowed)
+		return
+	}
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		http.Error(w, "user_id is required", http.StatusBadRequest)
+		return
+	}
+
+	cont := models.GetContact(userID)
+
+	if cont == nil {
+		http.Error(w, "No contact found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(cont)
+	if err != nil {
+		return
+	}
+}
+func CreateContact(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Only POST", http.StatusMethodNotAllowed)
+		return
+	}
+	var data createContactData
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
+	}
+	contactID, err := uuid.Parse(data.ContactId)
+	if err != nil {
+		return
+	}
+	UserId, err := uuid.Parse(data.UserID)
+	if err != nil {
+		return
+	}
+	cont := models.NewContact(data.ContactName, contactID, UserId)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(cont)
+	if err != nil {
+		return
+	}
+}
