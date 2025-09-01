@@ -55,3 +55,20 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "POST Only", http.StatusMethodNotAllowed)
+		return
+	}
+	Id, err := uuid.Parse(r.URL.Query().Get("id"))
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+	DeleteId := models.DeleteUser(Id)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(DeleteId)
+	if err != nil {
+		return
+	}
+}

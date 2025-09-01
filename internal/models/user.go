@@ -38,3 +38,11 @@ func ChangeName(userName string, ID uuid.UUID) User {
 	}
 	return u
 }
+
+func DeleteUser(ID uuid.UUID) User {
+	err := database.DB.Delete(&User{}, "id = ?", ID).Error
+	if err != nil {
+		return User{}
+	}
+	return User{}
+}
