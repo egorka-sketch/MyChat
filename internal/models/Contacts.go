@@ -35,3 +35,12 @@ func GetContact(UserID string) []Contacts {
 	}
 	return contacts
 }
+
+func DeleteContact(ContactId uuid.UUID) []Contacts {
+	var contacts []Contacts
+	err := database.DB.Where("contact_id", ContactId).Delete(&contacts).Error
+	if err != nil {
+		return []Contacts{}
+	}
+	return contacts
+}

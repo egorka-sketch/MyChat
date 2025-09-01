@@ -3,7 +3,9 @@ package handlers
 import (
 	"MyChat/internal/models"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
+	"log/slog"
 	"net/http"
 )
 
@@ -61,4 +63,24 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+}
+func DeleteContact(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "DELETE" {
+		http.Error(w, "Only DELETE", http.StatusMethodNotAllowed)
+		return
+	}
+
+	contactID, err := uuid.Parse(r.URL.Query().Get("contact_id"))
+	if err != nil {
+		return
+	}
+
+	deleteContact := models.DeleteContact(contactID)
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(deleteContact)
+	if err != nil {
+		return
+	}
+	slog.Info(fmt.Sprint("Контакт удален"))
 }

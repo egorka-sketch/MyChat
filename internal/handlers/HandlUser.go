@@ -56,8 +56,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "POST Only", http.StatusMethodNotAllowed)
+	if r.Method != "DELETE" {
+		http.Error(w, "Delete Only", http.StatusMethodNotAllowed)
 		return
 	}
 	Id, err := uuid.Parse(r.URL.Query().Get("id"))
