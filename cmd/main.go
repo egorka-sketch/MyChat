@@ -14,7 +14,7 @@ func main() {
 		Level: slog.LevelInfo,
 	}))
 	slog.SetDefault(logger)
-	slog.Info("Запуск приложения MyChat")
+	slog.Info("Запуск чата")
 
 	database.InitDB()
 
@@ -23,9 +23,10 @@ func main() {
 	http.HandleFunc("/getContact", handlers.GetContact)
 	http.HandleFunc("/createContact", handlers.CreateContact)
 	http.HandleFunc("/GetChat", handlers.GetChat)
-	http.HandleFunc("/UpdateUserName", handlers.UpdateUser)
 	http.HandleFunc("/DeleteUser", handlers.DeleteUser)
 	http.HandleFunc("/DeleteContact", handlers.DeleteContact)
+	http.HandleFunc("/UpdateName", handlers.UpdateUserName)
+	http.HandleFunc("/UpdateContact", handlers.UpdateContact)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

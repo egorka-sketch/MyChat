@@ -4,6 +4,7 @@ import (
 	"MyChat/internal/models"
 	"encoding/json"
 	"github.com/google/uuid"
+	"log/slog"
 	"net/http"
 )
 
@@ -34,6 +35,7 @@ func GetChat(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	slog.Info("GetChat", "user", userID)
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request) {
@@ -61,4 +63,5 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
 	}
+	slog.Info("PostMessage", "user", senderID)
 }

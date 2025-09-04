@@ -38,6 +38,8 @@ func GetContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	slog.Info(fmt.Sprint(cont))
+	return
 }
 func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -63,6 +65,8 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+
+	slog.Info(fmt.Sprint("Create Contact"))
 }
 func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "DELETE" {
@@ -82,5 +86,28 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	slog.Info(fmt.Sprint("Контакт удален"))
+	slog.Info(fmt.Sprint("Contact Deleted"))
+}
+
+func UpdateContact(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "PUT" {
+		http.Error(w, "Only PUT", http.StatusMethodNotAllowed)
+		return
+	}
+	contactID, err := uuid.Parse(r.URL.Query().Get("contact_id"))
+	if err != nil {
+		return
+	}
+	userID, err := uuid.Parse(r.URL.Query().Get("user_id"))
+	if err != nil {
+		return
+	}
+	var data createContactData
+
+	UpContact := models.UpdateContact(data.ContactName, contactID, userID)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(UpContact)
+	if err != nil {
+		return
+	}
 }

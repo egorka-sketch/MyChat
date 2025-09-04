@@ -44,3 +44,12 @@ func DeleteContact(ContactId uuid.UUID) []Contacts {
 	}
 	return contacts
 }
+
+func UpdateContact(ContactName string, ContactID uuid.UUID, UserID uuid.UUID) []Contacts {
+	var contact []Contacts
+	err := database.DB.Where("user_id = ? AND contact_id = ?", UserID, ContactID).Update("contact_name", ContactName).Error
+	if err != nil {
+		return []Contacts{}
+	}
+	return contact
+}
