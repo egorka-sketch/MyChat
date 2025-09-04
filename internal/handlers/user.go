@@ -27,7 +27,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	user := models.NewUser(data.UserName)
 	w.Header().Set("Content-Type", "application/json")
-	response := map[string]string{"status": "success", "message": "Created user: " + user.UserName}
+	response := map[string]string{"status": "success", "userId": user.ID.String()}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		return
