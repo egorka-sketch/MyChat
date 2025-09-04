@@ -22,11 +22,11 @@ func main() {
 	http.HandleFunc("/postMessage", handlers.PostMessage)
 	http.HandleFunc("/getContact", handlers.GetContact)
 	http.HandleFunc("/createContact", handlers.CreateContact)
-	http.HandleFunc("/GetChat", handlers.GetChat)
-	http.HandleFunc("/DeleteUser", handlers.DeleteUser)
-	http.HandleFunc("/DeleteContact", handlers.DeleteContact)
-	http.HandleFunc("/UpdateName", handlers.UpdateUser)
-	http.HandleFunc("/UpdateContact", handlers.UpdateContact)
+	http.HandleFunc("/getChat", handlers.GetChat)
+	http.HandleFunc("/deleteUser", handlers.DeleteUser)
+	http.HandleFunc("/deleteContact", handlers.DeleteContact)
+	http.HandleFunc("/updateName", handlers.UpdateUser)
+	http.HandleFunc("/updateContact", handlers.UpdateContact)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
