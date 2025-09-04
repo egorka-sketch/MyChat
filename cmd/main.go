@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/GetChat", handlers.GetChat)
 	http.HandleFunc("/DeleteUser", handlers.DeleteUser)
 	http.HandleFunc("/DeleteContact", handlers.DeleteContact)
-	http.HandleFunc("/UpdateName", handlers.UpdateUserName)
+	http.HandleFunc("/UpdateName", handlers.UpdateUser)
 	http.HandleFunc("/UpdateContact", handlers.UpdateContact)
 
 	err := http.ListenAndServe(":8080", nil)

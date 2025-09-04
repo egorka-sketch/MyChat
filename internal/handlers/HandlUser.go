@@ -34,27 +34,29 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//	func UpdateUser(w http.ResponseWriter, r *http.Request) {
-//		if r.Method != "POST" {
-//			http.Error(w, "POST Only", http.StatusMethodNotAllowed)
-//			return
-//		}
-//		var data createUserData
-//
-//		Id, err := uuid.Parse(r.URL.Query().Get("id"))
-//		if err != nil {
-//			http.Error(w, "Invalid ID", http.StatusBadRequest)
-//			return
-//		}
-//
-//		NewName := models.ChangeName(data.UserName, Id)
-//		w.Header().Set("Content-Type", "application/json")
-//		err = json.NewDecoder(r.Body).Decode(&NewName)
-//		if err != nil {
-//			http.Error(w, "NOT CORRECT", http.StatusBadRequest)
-//			return
-//		}
-//	}
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "PUT" {
+		http.Error(w, "PUT Only", http.StatusMethodNotAllowed)
+		return
+	}
+	var data createUserData
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "NOT CORRECT JSON", http.StatusBadRequest)
+		return
+	}
+	id, err := uuid.Parse(data.ID)
+	UpUser := models.ChangeName(data.UserName, id)
+	if err != nil {
+		http.Error(w, "Failed to update", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(UpUser)
+	if err != nil {
+		return
+	}
+}
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "DELETE" {
 		http.Error(w, "Delete Only", http.StatusMethodNotAllowed)
@@ -69,28 +71,6 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(DeleteId)
 	if err != nil {
-		return
-	}
-}
-
-func UpdateUserName(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "PUT" {
-		http.Error(w, "PUT Only", http.StatusMethodNotAllowed)
-		return
-	}
-	var data createUserData
-
-	id, err := uuid.Parse(r.URL.Query().Get("id"))
-	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
-		return
-	}
-
-	NewName := models.UpdateName(data.UserName, id)
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewDecoder(r.Body).Decode(&NewName)
-	if err != nil {
-		http.Error(w, "NOT CORRECT", http.StatusBadRequest)
 		return
 	}
 }

@@ -47,12 +47,3 @@ func DeleteUser(ID uuid.UUID) []User {
 	}
 	return users
 }
-
-func UpdateName(userName string, ID uuid.UUID) []User {
-	var users []User
-	err := database.DB.Model(&User{}).Where("id = ?", ID).Update("user_name", userName).Error
-	if err != nil {
-		return nil
-	}
-	return users
-}

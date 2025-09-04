@@ -94,6 +94,11 @@ func UpdateContact(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only PUT", http.StatusMethodNotAllowed)
 		return
 	}
+	var data createContactData
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
+	}
 	contactID, err := uuid.Parse(r.URL.Query().Get("contact_id"))
 	if err != nil {
 		return
@@ -102,7 +107,6 @@ func UpdateContact(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	var data createContactData
 
 	UpContact := models.UpdateContact(data.ContactName, contactID, userID)
 	w.Header().Set("Content-Type", "application/json")
