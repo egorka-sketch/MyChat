@@ -20,6 +20,8 @@ func main() {
 	slog.Info("Запуск чата")
 	cfg := config.LoadConfig("config/config.yaml")
 
+	handlers.SetJWTKey([]byte(cfg.JWT.Key))
+
 	database.InitDB(
 		cfg.Database.Host,
 		fmt.Sprintf("%d", cfg.Database.Port),
@@ -38,7 +40,7 @@ func main() {
 	http.HandleFunc("/deleteUser", handlers.DeleteUser)
 	http.HandleFunc("/deleteContact", handlers.DeleteContact)
 	http.HandleFunc("/updateName", handlers.UpdateUser)
-	http.HandleFunc("/updateContact", handlers.UpdateContact)
+	http.HandleFunc("/getIdUser", handlers.GetIdUser)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

@@ -4,3 +4,5 @@ database:
   user: user
   password: password
   name: yourName
+  jwt:
+    key: "your_very_secret_jwt_key"

@@ -14,6 +14,9 @@ type Config struct {
 		Password string `yaml:"password"`
 		Name     string `yaml:"name"`
 	} `yaml:"database"`
+	JWT struct {
+		Key string `yaml:"key"`
+	} `yaml:"jwt"`
 }
 
 func LoadConfig(path string) *Config {

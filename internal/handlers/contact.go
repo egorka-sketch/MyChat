@@ -88,30 +88,3 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 	}
 	slog.Info(fmt.Sprint("Contact Deleted"))
 }
-
-func UpdateContact(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "PUT" {
-		http.Error(w, "Only PUT", http.StatusMethodNotAllowed)
-		return
-	}
-	var data createContactData
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil {
-		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
-	}
-	contactID, err := uuid.Parse(r.URL.Query().Get("contact_id"))
-	if err != nil {
-		return
-	}
-	userID, err := uuid.Parse(r.URL.Query().Get("user_id"))
-	if err != nil {
-		return
-	}
-
-	UpContact := models.UpdateContact(data.ContactName, contactID, userID)
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(UpContact)
-	if err != nil {
-		return
-	}
-}

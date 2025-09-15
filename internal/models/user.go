@@ -8,6 +8,7 @@ import (
 type User struct {
 	ID       uuid.UUID `gorm:"type:uuid;primary_key;column:id"`
 	UserName string    `gorm:"column:user_name"`
+	Password string    `gorm:"column:password"`
 }
 
 func NewUser(userName string) User {
@@ -42,6 +43,15 @@ func ChangeName(userName string, ID uuid.UUID) User {
 func DeleteUser(ID uuid.UUID) []User {
 	var users []User
 	err := database.DB.Delete(&User{}, "id = ?", ID).Error
+	if err != nil {
+		return nil
+	}
+	return users
+}
+
+func GetUsers(UserName string) []User {
+	var users []User
+	err := database.DB.Where("user_name = ?", UserName).Order("id desc").Find(&users).Error
 	if err != nil {
 		return nil
 	}

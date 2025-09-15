@@ -42,17 +42,3 @@ func DeleteContact(ContactId uuid.UUID) []Contacts {
 	}
 	return contacts
 }
-
-func UpdateContact(ContactName string, ContactID uuid.UUID, UserID uuid.UUID) []Contacts {
-	var contact []Contacts
-	err := database.DB.Where("user_id = ? AND contact_id = ?", UserID, ContactID).First(&contact).Error
-	if err != nil {
-		return []Contacts{}
-	}
-	contact = append(contact, Contacts{
-		ContactName: ContactName,
-		ContactID:   ContactID,
-		UserID:      UserID,
-	})
-	return contact
-}

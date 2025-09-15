@@ -25,12 +25,15 @@ func GetChat(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "userID is required", http.StatusBadRequest)
 		return
 	}
+
 	msg := models.GetAllMessage(userID)
+
 	if len(msg) == 0 {
 		http.Error(w, "No messages found", http.StatusNotFound)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+
 	err := json.NewEncoder(w).Encode(msg)
 	if err != nil {
 		return
@@ -43,22 +46,29 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only POST", http.StatusMethodNotAllowed)
 		return
 	}
+
 	var data createNewMessage
+
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
 		return
 	}
+
 	senderID, err := uuid.Parse(data.SenderId)
 	if err != nil {
 		http.Error(w, "SENDER ID is not a valid UUID", http.StatusBadRequest)
 	}
+
 	receiverID, err := uuid.Parse(data.ReceiverId)
 	if err != nil {
 		http.Error(w, "RECEIVER ID is not a valid UUID", http.StatusBadRequest)
 	}
+
 	mes := models.NewMessage(senderID, receiverID, data.Text)
+
 	w.Header().Set("Content-Type", "application/json")
+
 	err = json.NewEncoder(w).Encode(mes)
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
