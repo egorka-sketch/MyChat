@@ -12,7 +12,7 @@ func SetJWTKey(key []byte) {
 	JwtKey = key
 }
 
-func JWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func JWT(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		Authorize := r.Header.Get("Authorization")
