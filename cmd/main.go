@@ -2,12 +2,13 @@ package main
 
 import (
 	"MyChat/config"
+	"MyChat/internal/Middleware"
 	"MyChat/internal/database"
 	"MyChat/internal/handlers"
 	"fmt"
 	"log"
 	"log/slog"
-	"net/http"
+	. "net/http"
 	"os"
 )
 
@@ -21,6 +22,7 @@ func main() {
 	cfg := config.LoadConfig("config/config.yaml")
 
 	handlers.SetJWTKey([]byte(cfg.JWT.Key))
+	Middleware.SetJWTKey([]byte(cfg.JWT.Key))
 
 	database.InitDB(
 		cfg.Database.Host,
@@ -32,17 +34,20 @@ func main() {
 
 	log.Println("Сервер запущен")
 
-	http.HandleFunc("/createUser", handlers.CreateUser)
-	http.HandleFunc("/postMessage", handlers.PostMessage)
-	http.HandleFunc("/getContact", handlers.GetContact)
-	http.HandleFunc("/createContact", handlers.CreateContact)
-	http.HandleFunc("/getChat", handlers.GetChat)
-	http.HandleFunc("/deleteUser", handlers.DeleteUser)
-	http.HandleFunc("/deleteContact", handlers.DeleteContact)
-	http.HandleFunc("/updateName", handlers.UpdateUser)
-	http.HandleFunc("/getIdUser", handlers.GetIdUser)
+	HandleFunc("/register", handlers.RegisterHandler)
+	HandleFunc("/login", handlers.LoginHandler)
 
-	err := http.ListenAndServe(":8080", nil)
+	HandleFunc("/createUser", Middleware.JWTMiddleware(handlers.CreateUser))
+	HandleFunc("/postMessage", Middleware.JWTMiddleware(handlers.PostMessage))
+	HandleFunc("/getContact", Middleware.JWTMiddleware(handlers.GetContact))
+	HandleFunc("/createContact", Middleware.JWTMiddleware(handlers.CreateContact))
+	HandleFunc("/getChat", Middleware.JWTMiddleware(handlers.GetChat))
+	HandleFunc("/deleteUser", Middleware.JWTMiddleware(handlers.DeleteUser))
+	HandleFunc("/deleteContact", Middleware.JWTMiddleware(handlers.DeleteContact))
+	HandleFunc("/updateName", Middleware.JWTMiddleware(handlers.UpdateUser))
+	HandleFunc("/getIdUser", Middleware.JWTMiddleware(handlers.GetIdUser))
+
+	err := ListenAndServe(":8080", nil)
 	if err != nil {
 		return
 	}

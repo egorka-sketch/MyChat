@@ -9,22 +9,20 @@ import (
 	"net/http"
 )
 
-var jwtKey []byte
+var JwtKey []byte
 
 type Authorization struct {
-	Login         string `json:"Login"`
-	Password      string `json:"Password"`
-	Success       bool   `json:"Success"`
-	StorageAccess string `json:"StorageAccess"`
+	Login    string `json:"user_name"`
+	Password string `json:"password"`
 }
 
 func SetJWTKey(key []byte) {
-	jwtKey = key
+	JwtKey = key
 }
 
-func GetJWTKey() []byte {
-	return jwtKey
-}
+//func GetJWTKey() []byte {
+//	return jwtKey
+//}
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -106,7 +104,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = user.ID
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(JwtKey)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -114,3 +112,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(tokenString))
 }
+
+//func GenerateJWT(userID string) (string, error) {
+//	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+//		"user_id": userID,
+//		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+//	})
+//	return token.SignedString(JwtKey)
+//}
