@@ -34,8 +34,8 @@ func main() {
 
 	log.Println("Сервер запущен")
 
-	HandleFunc("/register", handlers.RegisterHandler)
-	HandleFunc("/login", handlers.LoginHandler)
+	HandleFunc("/register", handlers.Register)
+	HandleFunc("/login", handlers.Login)
 
 	HandleFunc("/createUser", Middleware.JWT(handlers.CreateUser))
 	HandleFunc("/postMessage", Middleware.JWT(handlers.PostMessage))
