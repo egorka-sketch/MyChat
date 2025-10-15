@@ -5,6 +5,7 @@ import (
 	"MyChat/internal/models"
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -53,16 +54,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var exist models.User
-	if err := database.DB.Where("user_name = ?", data.Login).First(&exist).Error; err == nil {
+	if err = database.DB.Where("user_name = ?", data.Login).First(&exist).Error; err == nil {
 		http.Error(w, "User already exists", http.StatusConflict)
 		return
 	}
 
 	user := models.User{
+		ID:       uuid.New(),
 		UserName: data.Login,
 		Password: string(hash),
 	}
-	if err := database.DB.Create(&user).Error; err != nil {
+	if err = database.DB.Create(&user).Error; err != nil {
 		http.Error(w, "Could not create user", http.StatusInternalServerError)
 		return
 	}

@@ -58,11 +58,13 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 	senderID, err := uuid.Parse(data.SenderId)
 	if err != nil {
 		http.Error(w, "SENDER ID is not a valid UUID", http.StatusBadRequest)
+		return
 	}
 
 	receiverID, err := uuid.Parse(data.ReceiverId)
 	if err != nil {
 		http.Error(w, "RECEIVER ID is not a valid UUID", http.StatusBadRequest)
+		return
 	}
 
 	mes := models.NewMessage(senderID, receiverID, data.Text)
@@ -72,6 +74,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(mes)
 	if err != nil {
 		http.Error(w, "JSON NOT CORRECTION", http.StatusBadRequest)
+		return
 	}
 	slog.Info("PostMessage", "user", senderID)
 }

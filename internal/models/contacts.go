@@ -12,17 +12,18 @@ type Contacts struct {
 	UserID      uuid.UUID `gorm:"column:user_id"`
 }
 
-func NewContact(ContactName string, ContactID uuid.UUID, UserID uuid.UUID) Contacts {
-	Cont := Contacts{
+func NewContact(ContactName string, ContactID, UserID uuid.UUID) (Contacts, error) {
+	cont := Contacts{
+		ID:          ContactID,
 		ContactName: ContactName,
 		ContactID:   ContactID,
 		UserID:      UserID,
 	}
-	err := database.DB.Create(&Cont).Error
+	err := database.DB.Create(&cont).Error
 	if err != nil {
-		return Contacts{}
+		return Contacts{}, err
 	}
-	return Cont
+	return cont, nil
 }
 
 func GetContact(UserID string) []Contacts {
